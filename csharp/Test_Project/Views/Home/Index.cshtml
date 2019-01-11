@@ -1,0 +1,26 @@
+@{
+    ViewData["Title"] = "Books and Authors";
+    // upper Model displays values in a viewmodel
+    List<Author> Allauthors = Model.Allauthors;
+    // lowercase model binds a model to a form
+}
+@model ViewModel
+<div>
+    <h1>All Authors</h1>
+    <ul>
+        @foreach(Author author in Allauthors) {
+            <li>@author.Name</li>
+        }
+    </ul>
+</div>
+<div>
+    <h1>Add Author</h1>
+    <form action="/authors" method="post">
+        <label for="author">
+            Name:
+            <input id="author" asp-for="Author.Name">
+            <span asp-validation-for="Author.Name"></span>
+        </label>
+        <button>Add Author</button>
+    </form>
+</div>
