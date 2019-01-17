@@ -3,12 +3,18 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Test_Project.Models;
+using System.Linq;
 
 
 namespace Test_Project.Controllers
 {
     public class HomeController : Controller
     {
+        public Context _context;
+        public HomeController(Context context)
+        {
+            _context = context;
+        }
         // GET: /Home/
         [HttpGet]
         [Route("")]
@@ -16,26 +22,33 @@ namespace Test_Project.Controllers
         {
             // add in authors to session
 
+            // List<Author> Authors = _context.Authors.ToList();
+            // Console.WriteLine($"there are {Authors.Count} authors in the db");
             Console.WriteLine($"++++++++++++++++++++ Author from Index Method {TempData["author"]}++++++++++++++++++++");
             ViewModel AuthorView = new ViewModel();
 
-            string AuthorChecker = HttpContext.Session.GetString("AllAuthors");
+            AuthorView.Allauthors = _context.Authors.ToList();
 
-            if(AuthorChecker == null) {
-                // Save the allAuthors in session
-                HttpContext.Session.SetObjectAsJson("AllAuthors", AuthorView.Allauthors);
-            } else {
-                // all authors is set already, add the added author to session
-                // get current list of authrs from session
-                List<Author> AllAuthors = HttpContext.Session.GetObjectFromJson<List<Author>>("AllAuthors");
-                // add the new author to the list
-                Author NewAuthor = new Author((string)TempData["author"]);
-                AllAuthors.Add(NewAuthor);
-                // save the new list in the viewmodel
-                AuthorView.Allauthors = AllAuthors;
-                // save the the list in session
-                HttpContext.Session.SetObjectAsJson("AllAuthors", AllAuthors);
-            }
+            // -------------- below is the session example -----------------
+            // string AuthorChecker = HttpContext.Session.GetString("AllAuthors");
+
+
+            // if(AuthorChecker == null) {
+            //     // Save the allAuthors in session
+            //     HttpContext.Session.SetObjectAsJson("AllAuthors", AuthorView.Allauthors);
+            // } else {
+            //     // all authors is set already, add the added author to session
+            //     // get current list of authrs from session
+            //     List<Author> AllAuthors = HttpContext.Session.GetObjectFromJson<List<Author>>("AllAuthors");
+            //     // add the new author to the list
+            //     Author NewAuthor = new Author((string)TempData["author"]);
+            //     AllAuthors.Add(NewAuthor);
+            //     // save the new list in the viewmodel
+            //     AuthorView.Allauthors = AllAuthors;
+            //     // save the the list in session
+            //     HttpContext.Session.SetObjectAsJson("AllAuthors", AllAuthors);
+            // }
+            // -------------- end of session example -----------------
 
 
 
@@ -50,13 +63,30 @@ namespace Test_Project.Controllers
             if(ModelState.IsValid) {
                 Console.WriteLine($"------------------------ Author name is: {author.Name} -------------------------");
                 Console.WriteLine(author.Name);
-                TempData["author"] = author.Name;
+                // used tempdata for session
+                // TempData["author"] = author.Name;
+                // save author in db
+                _context.Authors.Add(author);
+                _context.SaveChanges();
                 return RedirectToAction("Index");
             } else {
                 ViewModel AuthorView = new ViewModel();
                 AuthorView.Author = author;
+                AuthorView.Allauthors = _context.Authors.ToList();
                 return View("Index", AuthorView);
             }
+        }
+
+        [HttpPost("authors/{authorId}")]
+        public IActionResult Delete(long authorId)
+        {
+            Author Author = _context.Authors.FirstOrDefault(author => author.AuthorId == authorId);
+            Console.WriteLine("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++");
+            Console.WriteLine(Author.Name);
+            _context.Authors.Remove(Author);
+            _context.SaveChanges();
+
+            return RedirectToAction("Index");
         }
 
     }

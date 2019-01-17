@@ -8,8 +8,12 @@
 <div>
     <h1>All Authors</h1>
     <ul>
-        @foreach(Author author in Allauthors) {
-            <li>@author.Name</li>
+        @foreach(Author author in Model.Allauthors) {
+            <li>@author.Name
+                <form action="/authors/@author.AuthorId" method="post">
+                    <button class="btn btn-primary">Delete</button>
+                </form>
+            </li>
         }
     </ul>
 </div>

@@ -4,6 +4,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Configuration;
+using Test_Project.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace Test_Project
 {
@@ -20,6 +22,7 @@ namespace Test_Project
             // Add framework services.
             services.AddMvc();
             services.AddSession();
+            services.AddDbContext<Context>(options => options.UseMySql(Configuration["DBInfo:ConnectionString"]));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
