@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using Test_Project.Models;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Test_Project.Controllers
@@ -28,6 +29,7 @@ namespace Test_Project.Controllers
             ViewModel AuthorView = new ViewModel();
 
             AuthorView.Allauthors = _context.Authors.ToList();
+            AuthorView.Allbooks = _context.Books.Include(book => book.WrittenBy).ToList();
 
             // -------------- below is the session example -----------------
             // string AuthorChecker = HttpContext.Session.GetString("AllAuthors");
@@ -89,5 +91,20 @@ namespace Test_Project.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost("books")]
+        public IActionResult CreateBook(Book book)
+        {
+            if(ModelState.IsValid)
+            {
+                _context.Books.Add(book);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            } else {
+                ViewModel AuthorView = new ViewModel();
+                AuthorView.Book = book;
+                AuthorView.Allauthors = _context.Authors.ToList();
+                return View("Index", AuthorView);
+            }
+        }
     }
 }

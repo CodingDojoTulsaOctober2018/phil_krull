@@ -7,7 +7,9 @@ namespace Test_Project.Models
     {
         // this field must match the parameter of the post(create)
         public Author Author {get; set;}
+        public Book Book {get; set;}
         public List<Author> Allauthors {get; set;}
+        public List<Book> Allbooks {get; set;}
 
         // this will be replace by a db
         // public ViewModel() {

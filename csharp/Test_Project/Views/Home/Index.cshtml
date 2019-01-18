@@ -5,7 +5,7 @@
     // lowercase model binds a model to a form
 }
 @model ViewModel
-<div>
+<div class="col-md-3">
     <h1>All Authors</h1>
     <ul>
         @foreach(Author author in Model.Allauthors) {
@@ -13,11 +13,16 @@
                 <form action="/authors/@author.AuthorId" method="post">
                     <button class="btn btn-primary">Delete</button>
                 </form>
+                <ul>
+                    @foreach(Book book in author.Wrote){
+                        <li>@book.Title</li>
+                    }
+                </ul>
             </li>
         }
     </ul>
 </div>
-<div>
+<div class="col-md-3">
     <h1>Add Author</h1>
     <form action="/authors" method="post">
         <label for="author">
@@ -26,5 +31,34 @@
             <span asp-validation-for="Author.Name"></span>
         </label>
         <button>Add Author</button>
+    </form>
+</div>
+<div class="col-md-3">
+    <h1>All Books</h1>
+    <ul>
+        @foreach(Book book in Model.Allbooks)
+        {
+            <li>@book.Title written by @book.WrittenBy.Name</li>
+        }
+    </ul>
+</div>
+<div class="col-md-3">
+    <h1>Add Book</h1>
+    <form action="/books" method="post">
+        <label asp-for="Book.Title"></label>
+        <input type="text" asp-for="Book.Title">
+        <span asp-validation-for="Book.Title"></span>
+        <br>
+        <label for="bookAuthor">
+            Author:
+            <select asp-for="Book.AuthorId" id="bookAuthor">
+                @foreach(Author author in Model.Allauthors)
+                {
+                    <option value="@author.AuthorId">@author.Name</option>
+                }
+            </select>
+        </label>
+        <br>
+        <button>Add Book</button>
     </form>
 </div>

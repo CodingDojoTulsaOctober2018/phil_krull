@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -16,7 +17,10 @@ namespace Test_Project.Models
         public DateTime CreatedAt {get; set;}
         public DateTime UpdatedAt {get; set;}
 
+        public List<Book> Wrote {get; set;}
+
         public Author() {
+            Wrote = new List<Book>();
             CreatedAt = DateTime.Now;
             UpdatedAt = DateTime.Now;
         }
