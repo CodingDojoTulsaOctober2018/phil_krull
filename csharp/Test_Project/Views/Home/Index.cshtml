@@ -5,60 +5,115 @@
     // lowercase model binds a model to a form
 }
 @model ViewModel
-<div class="col-md-3">
-    <h1>All Authors</h1>
-    <ul>
-        @foreach(Author author in Model.Allauthors) {
-            <li>@author.Name
-                <form action="/authors/@author.AuthorId" method="post">
-                    <button class="btn btn-primary">Delete</button>
-                </form>
+<div class="row">
+    <div class="col-md-3">
+        <h1>All Authors</h1>
+        <ul>
+            @foreach(Author author in Model.Allauthors) {
+                <li>@author.Name
+                    <form action="/authors/@author.AuthorId" method="post">
+                        <button class="btn btn-primary">Delete</button>
+                    </form>
+                    <ul>
+                        @foreach(Book book in author.Wrote){
+                            <li>@book.Title</li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-md-3">
+        <h1>Add Author</h1>
+        <form action="/authors" method="post">
+            <label for="author">
+                Name:
+                <input id="author" asp-for="Author.Name">
+                <span asp-validation-for="Author.Name"></span>
+            </label>
+            <button>Add Author</button>
+        </form>
+    </div>
+    <div class="col-md-3">
+        <h1>All Books</h1>
+        <ul>
+            @foreach(Book book in Model.Allbooks)
+            {
+                <li>@book.Title written by @book.WrittenBy.Name
+                    <ul>
+                        @foreach(PublishedBy publishedBy in book.PublishedBy)
+                        {
+                            <li>@publishedBy.Publisher.Name</li>
+                        }
+                    </ul>
+                </li>
+            }
+        </ul>
+    </div>
+    <div class="col-md-3">
+        <h1>Add Book</h1>
+        <form action="/books" method="post">
+            <label asp-for="Book.Title"></label>
+            <input type="text" asp-for="Book.Title">
+            <span asp-validation-for="Book.Title"></span>
+            <br>
+            <label for="bookAuthor">
+                Author:
+                <select asp-for="Book.AuthorId" id="bookAuthor">
+                    @foreach(Author author in Model.Allauthors)
+                    {
+                        <option value="@author.AuthorId">@author.Name</option>
+                    }
+                </select>
+            </label>
+            <br>
+            <button>Add Book</button>
+        </form>
+    </div>
+</div>
+<div class="row">
+    <div class="col-md-3">
+        <h1>Add Publishers</h1>
+        <form action="/publishers" method="post">
+            <label asp-for="Publisher.Name"></label>
+            <input type="text" asp-for="Publisher.Name" id="">
+            <span asp-validation-for="Publisher.Name"></span>
+            <button>Add Publisher</button>
+        </form>
+    </div>
+    <div class="col-md-3">
+        <h1>All Publishers</h1>
+        <ul>
+            @foreach(Publisher publisher in Model.Allpublishers)
+            {
+                <li>@publisher.Name</li>
                 <ul>
-                    @foreach(Book book in author.Wrote){
-                        <li>@book.Title</li>
+                    @foreach(PublishedBy publishedBy in publisher.PublishedBy)
+                    {
+                        <li>@publishedBy.Book.Title</li>
                     }
                 </ul>
-            </li>
-        }
-    </ul>
-</div>
-<div class="col-md-3">
-    <h1>Add Author</h1>
-    <form action="/authors" method="post">
-        <label for="author">
-            Name:
-            <input id="author" asp-for="Author.Name">
-            <span asp-validation-for="Author.Name"></span>
-        </label>
-        <button>Add Author</button>
-    </form>
-</div>
-<div class="col-md-3">
-    <h1>All Books</h1>
-    <ul>
-        @foreach(Book book in Model.Allbooks)
-        {
-            <li>@book.Title written by @book.WrittenBy.Name</li>
-        }
-    </ul>
-</div>
-<div class="col-md-3">
-    <h1>Add Book</h1>
-    <form action="/books" method="post">
-        <label asp-for="Book.Title"></label>
-        <input type="text" asp-for="Book.Title">
-        <span asp-validation-for="Book.Title"></span>
-        <br>
-        <label for="bookAuthor">
-            Author:
-            <select asp-for="Book.AuthorId" id="bookAuthor">
-                @foreach(Author author in Model.Allauthors)
+            }
+        </ul>
+    </div>
+    <div class="col-md-3">
+        <h1>Add Publisher To Book</h1>
+        <form action="/book_need_publisher" method="post">
+            <label asp-for="PublishedBy.BookId"></label>
+            <select asp-for="PublishedBy.BookId">
+                @foreach(Book book in Model.Allbooks)
                 {
-                    <option value="@author.AuthorId">@author.Name</option>
+                    <option value="@book.BookId">@book.Title @book.BookId</option>
                 }
             </select>
-        </label>
-        <br>
-        <button>Add Book</button>
-    </form>
+            <label asp-for="PublishedBy.PublisherId"></label>
+            <select asp-for="PublishedBy.PublisherId">
+                @foreach(Publisher publisher in Model.Allpublishers)
+                {
+                    <option value="@publisher.PublisherId">@publisher.Name @publisher.PublisherId</option>
+                }
+            </select>
+            <button>Add Publisher</button>
+        </form>
+    </div>
 </div>

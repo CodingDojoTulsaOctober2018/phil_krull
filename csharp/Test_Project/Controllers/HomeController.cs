@@ -11,7 +11,7 @@ namespace Test_Project.Controllers
 {
     public class HomeController : Controller
     {
-        public Context _context;
+        private Context _context;
         public HomeController(Context context)
         {
             _context = context;
@@ -29,7 +29,8 @@ namespace Test_Project.Controllers
             ViewModel AuthorView = new ViewModel();
 
             AuthorView.Allauthors = _context.Authors.ToList();
-            AuthorView.Allbooks = _context.Books.Include(book => book.WrittenBy).ToList();
+            AuthorView.Allbooks = _context.Books.Include(book => book.WrittenBy).Include(book => book.PublishedBy).ThenInclude(publishedBy => publishedBy.Publisher).ToList();
+            AuthorView.Allpublishers = _context.Publishers.Include(publisher => publisher.PublishedBy).ThenInclude(publishedBy => publishedBy.Book).ToList();
 
             // -------------- below is the session example -----------------
             // string AuthorChecker = HttpContext.Session.GetString("AllAuthors");
@@ -75,6 +76,8 @@ namespace Test_Project.Controllers
                 ViewModel AuthorView = new ViewModel();
                 AuthorView.Author = author;
                 AuthorView.Allauthors = _context.Authors.ToList();
+                AuthorView.Allbooks = _context.Books.Include(book => book.WrittenBy).ToList();
+                AuthorView.Allpublishers = _context.Publishers.ToList();
                 return View("Index", AuthorView);
             }
         }
@@ -103,6 +106,45 @@ namespace Test_Project.Controllers
                 ViewModel AuthorView = new ViewModel();
                 AuthorView.Book = book;
                 AuthorView.Allauthors = _context.Authors.ToList();
+                AuthorView.Allbooks = _context.Books.Include(b => b.WrittenBy).ToList();
+                return View("Index", AuthorView);
+            }
+        }
+
+        [HttpPost("publishers")]
+        public IActionResult CreatePublisher(Publisher publisher)
+        {
+            if(ModelState.IsValid)
+            {
+                _context.Publishers.Add(publisher);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            } else {
+                ViewModel AuthorView = new ViewModel();
+                AuthorView.Publisher = publisher;
+                AuthorView.Allauthors = _context.Authors.ToList();
+                AuthorView.Allbooks = _context.Books.Include(book => book.WrittenBy).ToList();
+                AuthorView.Allpublishers = _context.Publishers.ToList();
+                return View("Index", AuthorView);
+            }
+        }
+
+        [HttpPost("book_need_publisher")]
+        public IActionResult AddBookToPublisher(PublishedBy publishedBy)
+        {
+            if(ModelState.IsValid)
+            {
+                Console.WriteLine(publishedBy.BookId);
+                Console.WriteLine(publishedBy.PublisherId);
+                _context.PublishedBook.Add(publishedBy);
+                _context.SaveChanges();
+                return RedirectToAction("Index");
+            } else {
+                ViewModel AuthorView = new ViewModel();
+                AuthorView.PublishedBy = publishedBy;
+                AuthorView.Allauthors = _context.Authors.ToList();
+                AuthorView.Allbooks = _context.Books.Include(book => book.WrittenBy).ToList();
+                AuthorView.Allpublishers = _context.Publishers.ToList();
                 return View("Index", AuthorView);
             }
         }

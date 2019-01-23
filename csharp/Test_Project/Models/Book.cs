@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Collections.Generic;
 
 namespace Test_Project.Models
 {
@@ -20,6 +21,8 @@ namespace Test_Project.Models
         // relationship to an author
         public long AuthorId { get; set;}
         public Author WrittenBy {get; set;}
+
+        public List<PublishedBy> PublishedBy {get; set;}
 
         public Book() {
             CreatedAt = DateTime.Now;
